@@ -1,6 +1,9 @@
 import express from "express";
 import fetch from "node-fetch";
 import axios from "axios";
+import cors from "cors";
+
+app.use(cors());
 
 const app = express();
 const port = 8000;
@@ -56,6 +59,8 @@ app.get("/data", async (req, res) => {
         },
       }
     );
+
+    console.log("Response Headers:", response.headers.raw());
 
     if (!response.ok) {
       throw new Error("Failed to fetch data");
