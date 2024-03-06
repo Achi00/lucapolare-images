@@ -46,7 +46,7 @@ app.get("/", (req, res) => {
   res.sendFile("index.html", { root: "." });
 });
 app.get("/test", (req, res) => {
-  res.status(404).send("Hi from test server");
+  res.status(200).send("Hi from test server");
 });
 
 // Fetch and process data from Instagram
