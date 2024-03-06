@@ -63,6 +63,7 @@ app.get("/data", async (req, res) => {
       }
     );
 
+    console.log("Response:", await response.text());
     console.log("Response Headers:", response.headers.raw());
 
     if (!response.ok) {
