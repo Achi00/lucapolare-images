@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Instagram Data Display</title>
+    <style>
+      .media-container {
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+      }
+      video,
+      img {
+        max-width: 45%;
+        margin: 10px;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="data-container">Loading data...</div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("/data")
+          .then((response) => response.json())
+          .then((data) => {
+            const container = document.getElementById("data-container");
+            container.innerHTML = "";
+
+            // Handle images
+            // Assuming you have the `data` object with your Instagram URLs
+            data.images.forEach((imageUrl) => {
+              const imgElement = document.createElement("img");
+              imgElement.src = `/proxy?url=${encodeURIComponent(imageUrl)}`; //proxy endpoint
+              imgElement.alt = "Instagram Image";
+              container.appendChild(imgElement);
+            });
+
+            data.videos.forEach((videoUrl) => {
+              const videoElement = document.createElement("video");
+              videoElement.src = videoUrl; // Set the Instagram URL directly
+              videoElement.controls = true;
+              container.appendChild(videoElement);
+            });
+          })
+          .catch((error) => {
+            console.error("Fetch Error:", error);
+            document.getElementById("data-container").innerHTML =
+              "Failed to load data";
+          });
+      });
+    </script>
+  </body>
+</html>
