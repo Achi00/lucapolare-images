@@ -63,9 +63,6 @@ app.get("/data", async (req, res) => {
       }
     );
 
-    console.log("Response:", await response.text());
-    console.log("Response Headers:", response.headers.raw());
-
     if (!response.ok) {
       throw new Error("Failed to fetch data");
     }
@@ -73,21 +70,92 @@ app.get("/data", async (req, res) => {
     const data = await response.json();
     const edges = data.data.user.edge_owner_to_timeline_media.edges;
 
-    // Populate the imageUrls and videoUrls arrays
-    imageUrls = edges
-      .filter(
-        ({ node }) =>
-          node.__typename === "GraphImage" || node.__typename === "GraphSidecar"
-      )
-      .map(({ node }) => node.display_url);
+    const mediaData = edges.map(({ node }) => {
+      if (node.__typename === "GraphImage") {
+        return {
+          type: "image",
+          url: node.display_url,
+        };
+      } else if (node.__typename === "GraphVideo") {
+        return {
+          type: "video",
+          url: node.video_url,
+        };
+      }
+      return null;
+    });
 
-    videoUrls = edges
-      .filter(({ node }) => node.__typename === "GraphVideo")
-      .map(({ node }) => node.video_url);
+    const filteredMediaData = mediaData.filter(Boolean);
 
-    res.json({ images: imageUrls, videos: videoUrls });
+    res.json({ media: filteredMediaData });
   } catch (error) {
     res.status(500).send(error.message);
+  }
+});
+// app.get("/data", async (req, res) => {
+//   try {
+//     const response = await fetch(
+//       "https://i.instagram.com/api/v1/users/web_profile_info/?username=lucapolare",
+//       {
+//         method: "GET",
+//         headers: {
+//           "User-Agent": "iphone_ua",
+//           "x-ig-app-id": "936619743392459",
+//         },
+//       }
+//     );
+
+//     console.log("Response:", await response.text());
+//     console.log("Response Headers:", response.headers.raw());
+
+//     if (!response.ok) {
+//       throw new Error("Failed to fetch data");
+//     }
+
+//     const data = await response.json();
+//     const edges = data.data.user.edge_owner_to_timeline_media.edges;
+
+//     // Populate the imageUrls and videoUrls arrays
+//     imageUrls = edges
+//       .filter(
+//         ({ node }) =>
+//           node.__typename === "GraphImage" || node.__typename === "GraphSidecar"
+//       )
+//       .map(({ node }) => node.display_url);
+
+//     videoUrls = edges
+//       .filter(({ node }) => node.__typename === "GraphVideo")
+//       .map(({ node }) => node.video_url);
+
+//     res.json({ images: imageUrls, videos: videoUrls });
+//   } catch (error) {
+//     res.status(500).send(error.message);
+//   }
+// });
+
+app.get("/embed/:postUrl", async (req, res) => {
+  const postUrl = req.params.postUrl;
+  const oEmbedUrl = `https://instagram.com/p/${postUrl}/?__a=1`;
+
+  try {
+    const response = await fetch(oEmbedUrl);
+    const data = await response.text();
+
+    // Find the start and end indices of the JSON data
+    const jsonStartIndex = data.indexOf('{"graphql":');
+    const jsonEndIndex = data.lastIndexOf("}") + 1;
+
+    // Extract the JSON data substring
+    const jsonData = JSON.parse(data.substring(jsonStartIndex, jsonEndIndex));
+
+    // Extract the HTML code from the JSON data
+    const { html } = jsonData.graphql.shortcode_media;
+
+    // Send the HTML code as the response
+    res.send(html);
+  } catch (error) {
+    console.error("Error fetching embed data:", error);
+    res.status(500).send("Error fetching embed data");
   }
 });
 
