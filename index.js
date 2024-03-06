@@ -45,6 +45,9 @@ app.use("/proxy", async (req, res) => {
 app.get("/", (req, res) => {
   res.sendFile("index.html", { root: "." });
 });
+app.get("/test", (req, res) => {
+  res.status(404).send("Hi from test server");
+});
 
 // Fetch and process data from Instagram
 app.get("/data", async (req, res) => {
