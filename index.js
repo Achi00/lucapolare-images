@@ -3,10 +3,10 @@ import fetch from "node-fetch";
 import axios from "axios";
 import cors from "cors";
 
-app.use(cors());
-
 const app = express();
 const port = 8000;
+
+app.use(cors());
 
 // This array will hold the URLs of the images fetched from Instagram
 let imageUrls = [];
