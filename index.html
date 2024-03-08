@@ -29,37 +29,6 @@
             const container = document.getElementById("data-container");
             container.innerHTML = "";
 
-            // Render images and videos
-            data.media.forEach(({ type, url }) => {
-              if (type === "image") {
-                const imgElement = document.createElement("img");
-                imgElement.src = `/proxy?url=${encodeURIComponent(url)}`;
-                imgElement.alt = "Instagram Image";
-                container.appendChild(imgElement);
-              } else if (type === "video") {
-                const videoElement = document.createElement("video");
-                videoElement.src = `/proxy?url=${encodeURIComponent(url)}`;
-                videoElement.controls = true;
-                container.appendChild(videoElement);
-              }
-            });
-          })
-          .catch((error) => {
-            console.error("Fetch Error:", error);
-            document.getElementById("data-container").innerHTML =
-              "Failed to load data";
-          });
-      });
-    </script>
-
-    <!-- <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        fetch("/data")
-          .then((response) => response.json())
-          .then((data) => {
-            const container = document.getElementById("data-container");
-            container.innerHTML = "";
-
             // Handle images
             // Assuming you have the `data` object with your Instagram URLs
             data.images.forEach((imageUrl) => {
@@ -82,6 +51,6 @@
               "Failed to load data";
           });
       });
-    </script> -->
+    </script>
   </body>
 </html>
